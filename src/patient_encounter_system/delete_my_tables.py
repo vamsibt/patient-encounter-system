@@ -7,6 +7,7 @@ TABLES = [
     "vamsi_doctors",
 ]
 
+
 def delete_all_tables():
     with engine.connect() as conn:
         conn.execute(text("SET FOREIGN_KEY_CHECKS = 0;"))

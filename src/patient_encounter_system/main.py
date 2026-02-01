@@ -24,7 +24,7 @@ def get_db():
         db.close()
 
 
-@app.post("/patients",response_model=patient_pydantic.PatientRead,status_code=201)
+@app.post("/patients", response_model=patient_pydantic.PatientRead, status_code=201)
 def create_patient(
     patient: patient_pydantic.PatientCreate,
     db: Session = Depends(get_db),
@@ -36,7 +36,7 @@ def create_patient(
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@app.get("/patients/{patient_id}",response_model=patient_pydantic.PatientRead)
+@app.get("/patients/{patient_id}", response_model=patient_pydantic.PatientRead)
 def read_patient(patient_id: int, db: Session = Depends(get_db)):
     patient = patient_service.read_patient(db, patient_id)
     if not patient:
@@ -44,13 +44,13 @@ def read_patient(patient_id: int, db: Session = Depends(get_db)):
     return patient_pydantic.PatientRead(**patient)
 
 
-@app.get("/patients",response_model=list[patient_pydantic.PatientRead])
+@app.get("/patients", response_model=list[patient_pydantic.PatientRead])
 def read_all_patients(db: Session = Depends(get_db)):
     patients = patient_service.read_all_patients(db)
     return [patient_pydantic.PatientRead(**p) for p in patients]
 
 
-@app.post("/doctors",response_model=doctor_pydantic.DoctorRead,status_code=201)
+@app.post("/doctors", response_model=doctor_pydantic.DoctorRead, status_code=201)
 def create_doctor(
     doctor: doctor_pydantic.DoctorCreate,
     db: Session = Depends(get_db),
@@ -59,7 +59,7 @@ def create_doctor(
     return db_doctor
 
 
-@app.get("/doctors/{doctor_id}",response_model=doctor_pydantic.DoctorRead)
+@app.get("/doctors/{doctor_id}", response_model=doctor_pydantic.DoctorRead)
 def read_doctor(doctor_id: int, db: Session = Depends(get_db)):
     doctor = doctor_service.read_doctor(db, doctor_id)
     if not doctor:
@@ -67,13 +67,15 @@ def read_doctor(doctor_id: int, db: Session = Depends(get_db)):
     return doctor_pydantic.DoctorRead(**doctor)
 
 
-@app.get("/doctors",response_model=list[doctor_pydantic.DoctorRead])
+@app.get("/doctors", response_model=list[doctor_pydantic.DoctorRead])
 def read_all_doctors(db: Session = Depends(get_db)):
     doctors = doctor_service.read_all_doctors(db)
     return [doctor_pydantic.DoctorRead(**d) for d in doctors]
 
 
-@app.put( "/doctors/{doctor_id}/toggle-status", response_model=doctor_pydantic.DoctorRead)
+@app.put(
+    "/doctors/{doctor_id}/toggle-status", response_model=doctor_pydantic.DoctorRead
+)
 def toggle_status_doctor(doctor_id: int, db: Session = Depends(get_db)):
     db_doctor = doctor_service.toggle_status_doctor(db, doctor_id)
     if not db_doctor:
@@ -81,7 +83,11 @@ def toggle_status_doctor(doctor_id: int, db: Session = Depends(get_db)):
     return db_doctor
 
 
-@app.post("/appointments",response_model=appointment_pydantic.AppointmentRead,status_code=201,)
+@app.post(
+    "/appointments",
+    response_model=appointment_pydantic.AppointmentRead,
+    status_code=201,
+)
 def create_appointment(
     appointment: appointment_pydantic.AppointmentCreate,
     db: Session = Depends(get_db),
@@ -93,14 +99,12 @@ def create_appointment(
         raise HTTPException(status_code=409, detail=str(e))
 
 
-    
-@app.get("/appointments/by-date",response_model=list[appointment_pydantic.AppointmentRead])
-def read_appointments_for_a_date(date: str,db: Session = Depends(get_db)):
+@app.get(
+    "/appointments/by-date", response_model=list[appointment_pydantic.AppointmentRead]
+)
+def read_appointments_for_a_date(date: str, db: Session = Depends(get_db)):
     appointments = appointment_service.read_appointments_for_a_date(db, date)
-    return [
-        appointment_pydantic.AppointmentRead.from_orm(app)
-        for app in appointments
-    ]
+    return [appointment_pydantic.AppointmentRead.from_orm(app) for app in appointments]
 
 
 @app.get(
@@ -116,10 +120,7 @@ def list_appointments(
     appointments = appointment_service.list_appointments(
         db, doctor_id, patient_id, date
     )
-    return [
-        appointment_pydantic.AppointmentDetailedRead(**a)
-        for a in appointments
-    ]
+    return [appointment_pydantic.AppointmentDetailedRead(**a) for a in appointments]
 
 
 @app.delete("/patients/{patient_id}", status_code=204)
@@ -141,11 +142,12 @@ def delete_doctor(doctor_id: int, db: Session = Depends(get_db)):
     except ValueError as e:
         raise HTTPException(409, str(e))
 
+
 @app.delete("/appointments/{appointment_id}", status_code=204)
 def delete_appointment(appointment_id: int, db: Session = Depends(get_db)):
     try:
         result = appointment_service.delete_appointment(db, appointment_id)
-        if not result:   
+        if not result:
             raise HTTPException(404, "Appointment not found")
     except ValueError as e:
         raise HTTPException(409, str(e))

@@ -44,7 +44,8 @@ class AppointmentRead(BaseModel):
         return self.appointment_start_datetime + timedelta(
             minutes=self.appointment_duration_minutes
         )
-    
+
+
 class AppointmentDetailedRead(BaseModel):
     appointment_id: PositiveInt
     appointment_start_datetime: datetime
@@ -68,4 +69,3 @@ class AppointmentDetailedRead(BaseModel):
         return self.appointment_start_datetime + timedelta(
             minutes=self.appointment_duration_minutes
         )
-
