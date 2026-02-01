@@ -35,6 +35,9 @@ jobs:
         run: |
           poetry run black --check src
 
+      - name: Create database tables
+        run: poetry run python src/patient_encounter_system/create_tables.py
+
       - name: Run Tests with Coverage
         run: |
           poetry run pytest --cov=src --cov-fail-under=80
@@ -46,3 +49,6 @@ jobs:
       - name: Dependency Audit
         run: |
           poetry run pip-audit
+
+      - name: Build wheel
+        run: poetry run python -m build
