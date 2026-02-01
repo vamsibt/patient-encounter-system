@@ -36,7 +36,7 @@ jobs:
           poetry run black --check src
 
       - name: Create database tables
-        run: poetry run python src.patient_encounter_system.create_tables
+        run: poetry run python src/patient_encounter_system/create_tables.py
 
       - name: Run Tests with Coverage
         run: |
