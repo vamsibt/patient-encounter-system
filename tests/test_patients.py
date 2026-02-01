@@ -2,11 +2,14 @@ import pytest
 from fastapi.testclient import TestClient
 from patient_encounter_system.main import app
 
+
 @pytest.fixture
 def client():
     return TestClient(app)
 
+
 # ---------- CREATE PATIENT ----------
+
 
 def test_create_patient_success(client):
     payload = {
@@ -19,18 +22,18 @@ def test_create_patient_success(client):
     response = client.post("/patients", json=payload)
     assert response.status_code == 201
 
-
     data = response.json()
     assert data["first_name"] == "Mark"
     assert data["last_name"] == "Ruffalo"
     assert data["email"] == "mark.ruffalo@test.com"
+    client.delete(f"/patients/{data['id']}")
 
 
 def test_create_patient_duplicate_email_fails(client):
     payload = {
         "first_name": "Duplicate",
         "last_name": "User",
-        "email": "mark.ruffalo@test.com",  # already used
+        "email": "vamsikrishnabt@gmail.com",  # already used
         "phone_number": "8888888888",
     }
 
@@ -39,6 +42,7 @@ def test_create_patient_duplicate_email_fails(client):
 
 
 # ---------- READ PATIENT ----------
+
 
 def test_read_patient_success(client):
     response = client.get("/patients/1")
@@ -56,6 +60,7 @@ def test_read_patient_not_found(client):
 
 # ---------- LIST PATIENTS ----------
 
+
 def test_list_patients(client):
     response = client.get("/patients")
     assert response.status_code == 200
@@ -63,6 +68,7 @@ def test_list_patients(client):
 
 
 # ---------- DELETE PROTECTION ----------
+
 
 def test_delete_patient_with_appointments_fails(client):
     """

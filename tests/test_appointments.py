@@ -18,6 +18,7 @@ def test_create_appointment_success(client):
 
     response = client.post("/appointments", json=payload)
     assert response.status_code == 201
+    client.delete(f"/appointments/{response.json()['id']}")
 
 
 def test_appointment_conflict(client):

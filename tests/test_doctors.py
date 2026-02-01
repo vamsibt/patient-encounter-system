@@ -2,18 +2,17 @@ import pytest
 from fastapi.testclient import TestClient
 from patient_encounter_system.main import app
 
+
 @pytest.fixture
 def client():
     return TestClient(app)
 
+
 # ---------- CREATE DOCTOR ----------
 
+
 def test_create_doctor_success(client):
-    payload = {
-        "full_name": "Dr Strange",
-        "specialty": "Magic",
-        "active_status": True
-    }
+    payload = {"full_name": "Dr Strange", "specialty": "Magic", "active_status": True}
 
     response = client.post("/doctors", json=payload)
     assert response.status_code == 201
@@ -23,8 +22,11 @@ def test_create_doctor_success(client):
     assert data["specialty"] == "Magic"
     assert data["active_status"] is True
 
+    client.delete(f"/doctors/{data['id']}")
+
 
 # ---------- READ DOCTOR ----------
+
 
 def test_read_doctor_success(client):
     response = client.get("/doctors/1")
@@ -43,6 +45,7 @@ def test_read_doctor_not_found(client):
 
 # ---------- LIST DOCTORS ----------
 
+
 def test_list_doctors(client):
     response = client.get("/doctors")
     assert response.status_code == 200
@@ -50,6 +53,7 @@ def test_list_doctors(client):
 
 
 # ---------- TOGGLE STATUS ----------
+
 
 def test_toggle_doctor_status(client):
     # Initially active
@@ -74,6 +78,7 @@ def test_toggle_doctor_not_found(client):
 
 # ---------- DELETE PROTECTION ----------
 
+
 def test_delete_doctor_with_appointments_fails(client):
     """
     Doctor 1 already has appointments (created in appointment tests).
@@ -95,4 +100,3 @@ def test_delete_doctor_without_appointments_success(client):
     # Delete should work
     delete_resp = client.delete(f"/doctors/{doctor_id}")
     assert delete_resp.status_code == 204
-
