@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import select, text
+from patient_encounter_system.models import doctor
 from patient_encounter_system.schemas import appointment_pydantic as sch
 from patient_encounter_system.models.appointment import Appointment
 from datetime import timedelta
@@ -13,21 +14,27 @@ def create_appointment(db: Session, appointment: sch.AppointmentCreate):
     new_end = appointment.appointment_start_datetime + timedelta(
         minutes=appointment.appointment_duration_minutes
     )
+    get_doctor = db.get(Doctor, appointment.doctor_id)
+    if not get_doctor:
+        raise ValueError("Doctor not found")
+
+    if not get_doctor.active_status:
+        raise ValueError("Doctor is inactive and cannot accept appointments")
 
     stmt = (
-    select(Appointment.id)
-    .where(
-        Appointment.doctor_id == appointment.doctor_id,
-        Appointment.appointment_start_datetime < new_end,
-        func.timestampadd(
-            text("MINUTE"),
-            Appointment.appointment_duration_minutes,
-            Appointment.appointment_start_datetime,
-        ) > appointment.appointment_start_datetime,
+        select(Appointment.id)
+        .where(
+            Appointment.doctor_id == appointment.doctor_id,
+            Appointment.appointment_start_datetime < new_end,
+            func.timestampadd(
+                text("MINUTE"),
+                Appointment.appointment_duration_minutes,
+                Appointment.appointment_start_datetime,
+            )
+            > appointment.appointment_start_datetime,
+        )
+        .limit(1)
     )
-    .limit(1)
-)
-
 
     overlap = db.execute(stmt).scalar_one_or_none()
     if overlap:
@@ -44,9 +51,6 @@ def create_appointment(db: Session, appointment: sch.AppointmentCreate):
     db.commit()
     db.refresh(db_appointment)
     return db_appointment
-
-
-
 
 
 def read_appointment(db: Session, appointment_id: int):
@@ -74,64 +78,48 @@ def read_appointment(db: Session, appointment_id: int):
     result = db.execute(stmt).mappings().one_or_none()
     return result
 
-def read_all_appointments(db: Session):
+
+def list_appointments(
+    db: Session,
+    doctor_id: int | None = None,
+    patient_id: int | None = None,
+    date: str | None = None,
+):
     stmt = (
         select(
-            # Appointment fields
             Appointment.id.label("appointment_id"),
-            Appointment.patient_id.label("appointment_patient_id"),
-            Appointment.doctor_id.label("appointment_doctor_id"),
             Appointment.appointment_start_datetime,
             Appointment.appointment_duration_minutes,
             Appointment.created_at,
-
-
-            # Patient fields
             Patient.id.label("patient_id"),
             Patient.first_name.label("patient_first_name"),
             Patient.last_name.label("patient_last_name"),
             Patient.email.label("patient_email"),
-
-            # Doctor fields
             Doctor.id.label("doctor_id"),
             Doctor.full_name.label("doctor_full_name"),
             Doctor.specialty.label("doctor_specialty"),
         )
-        .join(Patient, Patient.id == Appointment.patient_id)
-        .join(Doctor, Doctor.id == Appointment.doctor_id)
+        .join(Patient)
+        .join(Doctor)
     )
 
-    result = db.execute(stmt).mappings().all()
-    return result
+    if doctor_id:
+        stmt = stmt.where(Appointment.doctor_id == doctor_id)
+
+    if patient_id:
+        stmt = stmt.where(Appointment.patient_id == patient_id)
+
+    if date:
+        stmt = stmt.where(func.date(Appointment.appointment_start_datetime) == date)
+
+    return db.execute(stmt).mappings().all()
 
 
-def read_appointments_for_doctor_on_date(db: Session, doctor_id: int, date: str):
-    stmt = select(
-        Appointment.id,
-        Appointment.patient_id,
-        Appointment.doctor_id,
-        Appointment.appointment_start_datetime,
-        Appointment.appointment_duration_minutes,
-        Appointment.created_at,
-    ).where(
-        Appointment.doctor_id == doctor_id,
-        func.date(Appointment.appointment_start_datetime) == date,
-    )
+def delete_appointment(db: Session, appointment_id: int):
+    appointment = db.get(Appointment, appointment_id)
+    if not appointment:
+        return False
 
-    result = db.execute(stmt).mappings().all()
-    return result
-
-def read_appointments_for_a_date(db: Session, date: str):
-    stmt = select(
-        Appointment.id,
-        Appointment.patient_id,
-        Appointment.doctor_id,
-        Appointment.appointment_start_datetime,
-        Appointment.appointment_duration_minutes,
-        Appointment.created_at,
-    ).where(
-        func.date(Appointment.appointment_start_datetime) == date,
-    ).order_by(Appointment.appointment_start_datetime)
-
-    result = db.execute(stmt).mappings().all()
-    return result
+    db.delete(appointment)
+    db.commit()
+    return True

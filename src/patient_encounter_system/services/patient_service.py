@@ -2,6 +2,9 @@ from sqlalchemy.orm import Session
 from patient_encounter_system.models import patient as models
 from sqlalchemy import select
 from patient_encounter_system.schemas import patient_pydantic as sch
+from sqlalchemy.sql import func
+from patient_encounter_system.models.appointment import Appointment
+from patient_encounter_system.models.patient import Patient
 
 def create_patient(db: Session, patient: sch.PatientCreate):
     db_patient = models.Patient(first_name = patient.first_name,
@@ -45,4 +48,21 @@ def read_all_patients(db:Session):
     result = db.execute(stmt).mappings().all()
     return result
 
-     
+def delete_patient(db: Session, patient_id: int):
+    patient = db.get(Patient, patient_id)
+    if not patient:
+        return None
+
+    has_appointments = db.scalar(
+        select(func.count())
+        .select_from(Appointment)
+        .where(Appointment.patient_id == patient_id)
+    )
+
+    if has_appointments > 0:
+        raise ValueError("Patient has appointments and cannot be deleted")
+
+    db.delete(patient)
+    db.commit()
+    return patient
+ 

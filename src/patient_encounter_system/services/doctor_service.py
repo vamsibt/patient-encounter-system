@@ -2,6 +2,9 @@ from sqlalchemy.orm import Session
 from patient_encounter_system.models import doctor as models
 from patient_encounter_system.schemas import doctor_pydantic as sch
 from sqlalchemy import select
+from sqlalchemy.sql import func
+from patient_encounter_system.models.appointment import Appointment
+from patient_encounter_system.models.doctor import Doctor
 def create_doctor(db: Session, doctor: sch.DoctorCreate):
     db_doctor = models.Doctor(full_name = doctor.full_name,
                             specialty = doctor.specialty,
@@ -55,3 +58,20 @@ def toggle_status_doctor(db: Session , doctor_id : int):
     db.refresh(db_doctor)
     return db_doctor
 
+def delete_doctor(db: Session, doctor_id: int):
+    doctor = db.get(Doctor, doctor_id)
+    if not doctor:
+        return None
+
+    has_appointments = db.scalar(
+        select(func.count())
+        .select_from(Appointment)
+        .where(Appointment.doctor_id == doctor_id)
+    )
+
+    if has_appointments > 0:
+        raise ValueError("Doctor has appointments and cannot be deleted")
+
+    db.delete(doctor)
+    db.commit()
+    return doctor

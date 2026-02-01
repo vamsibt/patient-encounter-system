@@ -1,0 +1,40 @@
+name: Python CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pytest pytest-cov ruff black bandit pip-audit
+
+      - name: Ruff lint
+        run: ruff src/patient_encounter_system
+
+      - name: Black format check
+        run: black --check src/patient_encounter_system
+
+      - name: Run tests with coverage
+        run: pytest --cov=src --cov-report=term-missing --cov-fail-under=80
+
+      - name: Security scan (Bandit)
+        run: bandit -r src/patient_encounter_system -ll
+
+      - name: Dependency audit
+        run: pip-audit

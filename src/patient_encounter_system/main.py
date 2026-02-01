@@ -92,10 +92,7 @@ def create_appointment(
     except ValueError as e:
         raise HTTPException(status_code=409, detail=str(e))
 
-@app.get("/appointments/", response_model=list[appointment_pydantic.AppointmentDetailedRead])
-def read_all_appointments(db: Session = Depends(get_db)):
-    appointments = appointment_service.read_all_appointments(db)
-    return [appointment_pydantic.AppointmentDetailedRead(**app) for app in appointments]
+
     
 @app.get("/appointments/by-date",response_model=list[appointment_pydantic.AppointmentRead])
 def read_appointments_for_a_date(date: str,db: Session = Depends(get_db)):
@@ -106,17 +103,49 @@ def read_appointments_for_a_date(date: str,db: Session = Depends(get_db)):
     ]
 
 
-@app.get("/appointments/{appointment_id}")
-def read_appointment(appointment_id: int, db: Session = Depends(get_db)):
-    appointment = appointment_service.read_appointment(db, appointment_id)
-    if not appointment:
-        raise HTTPException(status_code=404, detail="Appointment not found")
-    return appointment
+@app.get(
+    "/appointments",
+    response_model=list[appointment_pydantic.AppointmentDetailedRead],
+)
+def list_appointments(
+    doctor_id: int | None = None,
+    patient_id: int | None = None,
+    date: str | None = None,
+    db: Session = Depends(get_db),
+):
+    appointments = appointment_service.list_appointments(
+        db, doctor_id, patient_id, date
+    )
+    return [
+        appointment_pydantic.AppointmentDetailedRead(**a)
+        for a in appointments
+    ]
 
 
-@app.get("/appointments/{doctor_id}/for_a_date", response_model=list[appointment_pydantic.AppointmentRead])
-def read_appointments_for_doctor_on_date(doctor_id: int=None, date: str = None,db: Session = Depends(get_db)):
-    appointments = appointment_service.read_appointments_for_doctor_on_date(db, doctor_id, date)
-    return [appointment_pydantic.AppointmentRead.from_orm(app) for app in appointments]
+@app.delete("/patients/{patient_id}", status_code=204)
+def delete_patient(patient_id: int, db: Session = Depends(get_db)):
+    try:
+        result = patient_service.delete_patient(db, patient_id)
+        if not result:
+            raise HTTPException(404, "Patient not found")
+    except ValueError as e:
+        raise HTTPException(409, str(e))
 
 
+@app.delete("/doctors/{doctor_id}", status_code=204)
+def delete_doctor(doctor_id: int, db: Session = Depends(get_db)):
+    try:
+        result = doctor_service.delete_doctor(db, doctor_id)
+        if not result:
+            raise HTTPException(404, "Doctor not found")
+    except ValueError as e:
+        raise HTTPException(409, str(e))
+
+@app.delete("/appointments/{appointment_id}", status_code=204)
+def delete_appointment(appointment_id: int, db: Session = Depends(get_db)):
+    try:
+        result = appointment_service.delete_appointment(db, appointment_id)
+        if not result:   
+            raise HTTPException(404, "Appointment not found")
+    except ValueError as e:
+        raise HTTPException(409, str(e))
