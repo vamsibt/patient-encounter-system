@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+        
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -34,6 +35,11 @@ jobs:
       - name: Run Black
         run: |
           poetry run black --check src
+
+      - name: Init DB
+        env:
+          DATABASE_URL: sqlite:///./test.db
+        run: poetry run python -m patient_encounter_system.init_db
 
       - name: Run Tests with Coverage
         run: |
