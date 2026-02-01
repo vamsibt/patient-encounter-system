@@ -1,3 +1,4 @@
+# ruff: noqa: E402
 from datetime import datetime
 
 from sqlalchemy import String, Boolean, DateTime, func

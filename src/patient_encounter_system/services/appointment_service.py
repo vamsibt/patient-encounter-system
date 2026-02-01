@@ -1,6 +1,5 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import select, text
-from patient_encounter_system.models import doctor
 from patient_encounter_system.schemas import appointment_pydantic as sch
 from patient_encounter_system.models.appointment import Appointment
 from datetime import timedelta

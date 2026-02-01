@@ -1,3 +1,5 @@
+# ruff: noqa: E402
+
 from datetime import datetime
 from patient_encounter_system.database import Base
 from sqlalchemy import (

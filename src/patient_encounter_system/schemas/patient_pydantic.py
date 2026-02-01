@@ -1,5 +1,4 @@
 from pydantic import BaseModel, PositiveInt
-from typing import Optional
 from datetime import datetime
 from pydantic import EmailStr
 
