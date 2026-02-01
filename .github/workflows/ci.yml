@@ -9,7 +9,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+    environment: ci
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -37,7 +37,7 @@ jobs:
 
       - name: Run Tests with Coverage
         env:
-          DATABASE_URL: mysql+pymysql://mongouhd_evernorth:U*dgQkKRuEHe@cp-15.webhostbox.net/mongouhd_evernorth
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           poetry run pytest --cov=src --cov-fail-under=80
 
