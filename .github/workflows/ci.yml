@@ -36,11 +36,11 @@ jobs:
           poetry run black --check src
 
       - name: Create database tables
+        env:
+          DATABASE_URL: sqlite:///./test.db
         run: poetry run python -m patient_encounter_system.create_tables
 
       - name: Run Tests with Coverage
-        env:
-          DATABASE_URL: sqlite:///./test.db
         run: |
           poetry run pytest --cov=src --cov-fail-under=80
 
