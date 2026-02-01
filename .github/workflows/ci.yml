@@ -19,22 +19,30 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Install Poetry
+        run: |
+          pip install poetry
+
       - name: Install dependencies
         run: |
-          pip install -r requirements.txt
-          pip install pytest pytest-cov ruff black bandit pip-audit
+          poetry install --no-interaction --no-root
 
-      - name: Ruff lint
-        run: ruff src/patient_encounter_system
+      - name: Run Ruff
+        run: |
+          poetry run ruff check src
 
-      - name: Black format check
-        run: black --check src/patient_encounter_system
+      - name: Run Black
+        run: |
+          poetry run black --check src
 
-      - name: Run tests with coverage
-        run: pytest --cov=src --cov-report=term-missing --cov-fail-under=80
+      - name: Run Tests with Coverage
+        run: |
+          poetry run pytest --cov=src --cov-fail-under=80
 
-      - name: Security scan (Bandit)
-        run: bandit -r src/patient_encounter_system -ll
+      - name: Security Scan (Bandit)
+        run: |
+          poetry run bandit -r src -ll
 
-      - name: Dependency audit
-        run: pip-audit
+      - name: Dependency Audit
+        run: |
+          poetry run pip-audit
