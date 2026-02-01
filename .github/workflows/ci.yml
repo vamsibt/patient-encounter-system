@@ -9,9 +9,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    environment: ci
-
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -38,6 +36,8 @@ jobs:
           poetry run black --check src
 
       - name: Run Tests with Coverage
+        env:
+          DATABASE_URL: mysql+pymysql://mongouhd_evernorth:U*dgQkKRuEHe@cp-15.webhostbox.net/mongouhd_evernorth
         run: |
           poetry run pytest --cov=src --cov-fail-under=80
 
