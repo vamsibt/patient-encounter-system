@@ -1,3 +1,5 @@
+# ruff: noqa: F401
+
 from patient_encounter_system.database import engine, Base
 
 # IMPORTANT: import models

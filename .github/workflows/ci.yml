@@ -11,7 +11,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-        
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -36,12 +35,9 @@ jobs:
         run: |
           poetry run black --check src
 
-      - name: Init DB
-        env:
-          DATABASE_URL: sqlite:///./test.db
-        run: poetry run python -m patient_encounter_system.init_db
-
       - name: Run Tests with Coverage
+        env:
+          DATABASE_URL: mysql+pymysql://mongouhd_evernorth:U*dgQkKRuEHe@cp-15.webhostbox.net/mongouhd_evernorth
         run: |
           poetry run pytest --cov=src --cov-fail-under=80
 
