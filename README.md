@@ -135,17 +135,22 @@ patient-encounter-system/
 ```
 
 ## Setup Instructions
-# 1. Clone the Repository
+
+### 1. Clone the Repository
+
     git clone https://github.com/<your-username>/patient-encounter-system.git
     cd patient-encounter-system
 
-# 2. Install Poetry
+### 2. Install Poetry
+
     pip install poetry
 
-# 3. Install Dependencies
+### 3. Install Dependencies
+
     poetry install
 
 ## Environment Variables
+
 Create a .env file or set environment variables:
 
     DATABASE_URL=mysql+pymysql://username:password@localhost:3306/patient_db
@@ -156,60 +161,53 @@ Automated tests
 CI pipeline
 Database Initialization
 
-# Create database tables:
+### Create database tables:
 
     poetry run python -m patient_encounter_system.create_tables
 
-
-# Delete all tables (if required):
+### Delete all tables (if required):
 
     poetry run python -m patient_encounter_system.delete_my_tables
 
-# Running the Application
+### Running the Application
+
     poetry run uvicorn patient_encounter_system.main:app --reload
 
-
-# Application URL:
+### Application URL:
 
     http://127.0.0.1:8000
 
-
-# Swagger UI:
+### Swagger UI:
 
     http://127.0.0.1:8000/docs
 
 ## Running Tests
 
-# Run all tests:
+### Run all tests:
 
     poetry run pytest
 
-
-# Run a specific test file:
+### Run a specific test file:
 
     poetry run pytest tests/test_patients.py
 
-
-# Run a single test case:
+### Run a single test case:
 
     poetry run pytest tests/test_patients.py::test_create_patient_success
-
 
 All tests automatically clean up any data they create.
 
 ## Test Coverage
 
-# Run tests with coverage:
+### Run tests with coverage:
 
     poetry run pytest --cov=src --cov-report=term-missing
 
-
-# Minimum required coverage:
+### Minimum required coverage:
 
     80%
 
-
-# Current coverage:
+### Current coverage:
 
     88%
 
@@ -248,7 +246,8 @@ All tests automatically clean up any data they create.
 --pip-audit – Dependency vulnerability auditing
 
 ## API Endpoints
-# Patients
+
+### Patients
 
     POST /patients
 
@@ -258,7 +257,7 @@ All tests automatically clean up any data they create.
 
     DELETE /patients/{id}
 
-# Doctors
+### Doctors
 
     POST /doctors
 
@@ -270,7 +269,7 @@ All tests automatically clean up any data they create.
 
     DELETE /doctors/{id}
 
-# Appointments
+### Appointments
 
     POST /appointments
 
