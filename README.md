@@ -276,5 +276,5 @@ All tests automatically clean up any data they create.
     GET /appointments
 
     GET /appointments/{id}
-
+    
     DELETE /appointments/{id}
