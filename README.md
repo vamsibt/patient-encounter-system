@@ -132,156 +132,150 @@ patient-encounter-system/
 ├── README.md
 ├── .env
 └── .gitignore
+```
 
-Setup Instructions
-1. Clone the Repository
-git clone https://github.com/<your-username>/patient-encounter-system.git
-cd patient-encounter-system
+## Setup Instructions
+# 1. Clone the Repository
+    git clone https://github.com/<your-username>/patient-encounter-system.git
+    cd patient-encounter-system
 
-2. Install Poetry
-pip install poetry
+# 2. Install Poetry
+    pip install poetry
 
-3. Install Dependencies
-poetry install
+# 3. Install Dependencies
+    poetry install
 
-Environment Variables
-
+## Environment Variables
 Create a .env file or set environment variables:
 
-DATABASE_URL=mysql+pymysql://username:password@localhost:3306/patient_db
-
+    DATABASE_URL=mysql+pymysql://username:password@localhost:3306/patient_db
 
 This same variable is used for:
-
 Local development
-
 Automated tests
-
 CI pipeline
-
 Database Initialization
 
-Create database tables:
+# Create database tables:
 
-poetry run python -m patient_encounter_system.create_tables
-
-
-Delete all tables (if required):
-
-poetry run python -m patient_encounter_system.delete_my_tables
-
-Running the Application
-poetry run uvicorn patient_encounter_system.main:app --reload
+    poetry run python -m patient_encounter_system.create_tables
 
 
-Application URL:
+# Delete all tables (if required):
 
-http://127.0.0.1:8000
+    poetry run python -m patient_encounter_system.delete_my_tables
 
-
-Swagger UI:
-
-http://127.0.0.1:8000/docs
-
-Running Tests
-
-Run all tests:
-
-poetry run pytest
+# Running the Application
+    poetry run uvicorn patient_encounter_system.main:app --reload
 
 
-Run a specific test file:
+# Application URL:
 
-poetry run pytest tests/test_patients.py
+    http://127.0.0.1:8000
 
 
-Run a single test case:
+# Swagger UI:
 
-poetry run pytest tests/test_patients.py::test_create_patient_success
+    http://127.0.0.1:8000/docs
+
+## Running Tests
+
+# Run all tests:
+
+    poetry run pytest
+
+
+# Run a specific test file:
+
+    poetry run pytest tests/test_patients.py
+
+
+# Run a single test case:
+
+    poetry run pytest tests/test_patients.py::test_create_patient_success
 
 
 All tests automatically clean up any data they create.
 
-Test Coverage
+## Test Coverage
 
-Run tests with coverage:
+# Run tests with coverage:
 
-poetry run pytest --cov=src --cov-report=term-missing
-
-
-Minimum required coverage:
-
-80%
+    poetry run pytest --cov=src --cov-report=term-missing
 
 
-Current coverage:
+# Minimum required coverage:
 
-88%
+    80%
 
-CI/CD Pipeline
 
-GitHub Actions pipeline includes:
+# Current coverage:
 
-Dependency installation using Poetry
+    88%
 
-Ruff linting
+## CI/CD Pipeline
 
-Black formatting checks
+--GitHub Actions pipeline includes:
 
-Bandit security scanning
+--Dependency installation using Poetry
 
-Pytest with coverage enforcement
+--Ruff linting
 
-Build validation
+--Black formatting checks
 
-Pipeline triggers:
+--Bandit security scanning
 
-Push to main
+--Pytest with coverage enforcement
 
-Pull requests to main
+--Build validation
 
-Database credentials are securely injected using GitHub Environment Secrets.
+--Pipeline triggers:
 
-Security & Code Quality
+--Push to main
 
-Ruff – Static code analysis
+--Pull requests to main
 
-Black – Code formatting enforcement
+--Database credentials are securely injected using GitHub Environment Secrets.
 
-Bandit – Security vulnerability scanning
+--Security & Code Quality
 
-pip-audit – Dependency vulnerability auditing
+--Ruff – Static code analysis
 
-API Endpoints
-Patients
+--Black – Code formatting enforcement
 
-POST /patients
+--Bandit – Security vulnerability scanning
 
-GET /patients
+--pip-audit – Dependency vulnerability auditing
 
-GET /patients/{id}
+## API Endpoints
+# Patients
 
-DELETE /patients/{id}
+    POST /patients
 
-Doctors
+    GET /patients
 
-POST /doctors
+    GET /patients/{id}
 
-GET /doctors
+    DELETE /patients/{id}
 
-GET /doctors/{id}
+# Doctors
 
-PUT /doctors/{id}/toggle-status
+    POST /doctors
 
-DELETE /doctors/{id}
+    GET /doctors
 
-Appointments
+    GET /doctors/{id}
 
-POST /appointments
+    PUT /doctors/{id}/toggle-status
 
-GET /appointments
+    DELETE /doctors/{id}
 
-GET /appointments/{id}
+# Appointments
 
-DELETE /appointments/{id}
-```
+    POST /appointments
+
+    GET /appointments
+
+    GET /appointments/{id}
+
+    DELETE /appointments/{id}
