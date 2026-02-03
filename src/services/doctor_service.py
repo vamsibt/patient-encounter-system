@@ -1,10 +1,18 @@
 from sqlalchemy.orm import Session
 from src.models import doctor as models
+<<<<<<< HEAD
 from src.schemas import doctor_pydantic as sch
 from sqlalchemy import select
 from sqlalchemy.sql import func
 from src.models.appointment import Appointment
 from src.models.doctor import Doctor
+=======
+from schemas import doctor_pydantic as sch
+from sqlalchemy import select
+from sqlalchemy.sql import func
+from models.appointment import Appointment
+from models.doctor import Doctor
+>>>>>>> b0d2e738c694bf08cef7735fc227ce14ba611813
 
 
 def create_doctor(db: Session, doctor: sch.DoctorCreate):

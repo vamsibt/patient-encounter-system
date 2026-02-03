@@ -34,6 +34,8 @@ jobs:
       - name: Run Black
         run: |
           poetry run black --check src
+      
+      
 
       - name: Run Tests with Coverage
         env:

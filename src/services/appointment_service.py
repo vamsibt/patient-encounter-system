@@ -1,6 +1,10 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import select, text
+<<<<<<< HEAD
 from src.schemas import appointment_pydantic as sch
+=======
+from schemas import appointment_pydantic as sch
+>>>>>>> b0d2e738c694bf08cef7735fc227ce14ba611813
 from src.models.appointment import Appointment
 from datetime import timedelta
 from sqlalchemy.sql import func
