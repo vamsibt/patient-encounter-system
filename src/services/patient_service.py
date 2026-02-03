@@ -1,17 +1,10 @@
 from sqlalchemy.orm import Session
-from src.models import patient as models
+from models import patient as models
 from sqlalchemy import select
-<<<<<<< HEAD
-from src.schemas import patient_pydantic as sch
-from sqlalchemy.sql import func
-from src.models.appointment import Appointment
-from src.models.patient import Patient
-=======
 from schemas import patient_pydantic as sch
 from sqlalchemy.sql import func
 from models.appointment import Appointment
 from models.patient import Patient
->>>>>>> b0d2e738c694bf08cef7735fc227ce14ba611813
 
 
 def create_patient(db: Session, patient: sch.PatientCreate):

@@ -1,21 +1,13 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from src.database import SessionLocal
-<<<<<<< HEAD
-from src.services import (
-=======
+from database import SessionLocal
 from services import (
->>>>>>> b0d2e738c694bf08cef7735fc227ce14ba611813
     patient_service,
     doctor_service,
     appointment_service,
 )
-<<<<<<< HEAD
-from src.schemas import (
-=======
 from schemas import (
->>>>>>> b0d2e738c694bf08cef7735fc227ce14ba611813
     patient_pydantic,
     doctor_pydantic,
     appointment_pydantic,

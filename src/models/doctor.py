@@ -4,7 +4,7 @@ from datetime import datetime
 from sqlalchemy import String, Boolean, DateTime, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from src.database import Base
+from database import Base
 
 
 class Doctor(Base):
@@ -37,8 +37,4 @@ class Doctor(Base):
 
     appointments: Mapped[list["Appointment"]] = relationship(back_populates="doctor")
 
-<<<<<<< HEAD
-from src.models.appointment import Appointment
-=======
-    from models.appointment import Appointment
->>>>>>> b0d2e738c694bf08cef7735fc227ce14ba611813
+from models.appointment import Appointment

@@ -40,7 +40,6 @@ def test_appointment_conflict(client):
 
     response = client.post("/appointments", json=conflict_payload)
     assert response.status_code == 409
-    
 
 
 def test_appointment_in_past(client):
