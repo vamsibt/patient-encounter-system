@@ -1,4 +1,3 @@
-from tracemalloc import start
 from sqlalchemy.orm import Session
 from sqlalchemy import select, text
 from schemas import appointment_pydantic as sch
