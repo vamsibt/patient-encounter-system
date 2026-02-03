@@ -1,6 +1,6 @@
 import pytest
 from fastapi.testclient import TestClient
-from patient_encounter_system.main import app
+from src.main import app
 
 
 @pytest.fixture
@@ -29,7 +29,7 @@ def test_appointment_conflict(client):
         "appointment_duration_minutes": 60,
     }
 
-    client.post("/appointments", json=payload)
+    res =client.post("/appointments", json=payload)
 
     conflict_payload = {
         "patient_id": 1,
@@ -40,6 +40,8 @@ def test_appointment_conflict(client):
 
     response = client.post("/appointments", json=conflict_payload)
     assert response.status_code == 409
+    client.delete(f"/appointments/{res.json()['id']}")
+    
 
 
 def test_appointment_in_past(client):

@@ -1,10 +1,13 @@
 [tool.poetry]
 name = "patient-encounter-system"
 version = "0.1.0"
-description = ""
+description = "Backend API for managing patients, doctors, and appointments"
 authors = ["vamsibt <vamsikrishnabt@gmail.com>"]
 readme = "README.md"
-packages = [{ include = "patient_encounter_system", from = "src" }]
+
+# IMPORTANT:
+# We are using a flat src/ layout (NOT a package folder)
+packages = [{ include = "*", from = "src" }]
 
 [tool.poetry.dependencies]
 python = ">=3.10,<4.0"
@@ -16,18 +19,18 @@ fastapi = "^0.128.0"
 uvicorn = "^0.40.0"
 email-validator = "^2.3.0"
 
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2,<10.0.0",
+    "pytest-cov>=7.0.0,<8.0.0",
+    "httpx>=0.28.1,<0.29.0",
+    "ruff>=0.14.14,<0.15.0",
+    "black>=26.1.0,<27.0.0",
+    "bandit>=1.9.3,<2.0.0",
+    "pip-audit>=2.10.0,<3.0.0",
+    "build>=1.4.0,<2.0.0"
+]
+
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
-
-[dependency-groups]
-dev = [
-    "pytest (>=9.0.2,<10.0.0)",
-    "pytest-cov (>=7.0.0,<8.0.0)",
-    "httpx (>=0.28.1,<0.29.0)",
-    "ruff (>=0.14.14,<0.15.0)",
-    "black (>=26.1.0,<27.0.0)",
-    "bandit (>=1.9.3,<2.0.0)",
-    "pip-audit (>=2.10.0,<3.0.0)",
-    "build (>=1.4.0,<2.0.0)"
-]
