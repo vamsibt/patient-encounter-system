@@ -1,5 +1,5 @@
 from sqlalchemy import text
-from database import engine
+from src.database import engine
 
 
 def test_db_connection():

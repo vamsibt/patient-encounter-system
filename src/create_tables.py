@@ -1,7 +1,7 @@
 # ruff: noqa: F401
 
-from database import engine
-from database import Base
+from src.database import engine
+from src.database import Base
 
 # IMPORTANT: import all models so SQLAlchemy knows them
 from models.patient import Patient
