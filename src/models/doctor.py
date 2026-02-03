@@ -37,4 +37,5 @@ class Doctor(Base):
 
     appointments: Mapped[list["Appointment"]] = relationship(back_populates="doctor")
 
+
 from models.appointment import Appointment
