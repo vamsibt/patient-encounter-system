@@ -1,6 +1,6 @@
 import pytest
 from fastapi.testclient import TestClient
-from patient_encounter_system.main import app
+from main import app
 
 
 @pytest.fixture
