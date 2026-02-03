@@ -1,11 +1,11 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import select, text
 from schemas import appointment_pydantic as sch
-from models.appointment import Appointment
+from src.models.appointment import Appointment
 from datetime import timedelta
 from sqlalchemy.sql import func
-from models.patient import Patient
-from models.doctor import Doctor
+from src.models.patient import Patient
+from src.models.doctor import Doctor
 
 
 def create_appointment(db: Session, appointment: sch.AppointmentCreate):

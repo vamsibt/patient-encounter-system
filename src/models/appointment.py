@@ -1,7 +1,7 @@
 # ruff: noqa: E402
 
 from datetime import datetime
-from database import Base
+from src.database import Base
 from sqlalchemy import (
     DateTime,
     ForeignKey,
@@ -47,5 +47,5 @@ class Appointment(Base):
     doctor: Mapped["Doctor"] = relationship("Doctor", back_populates="appointments")
 
 
-from models.patient import Patient
-from models.doctor import Doctor
+from src.models.patient import Patient
+from src.models.doctor import Doctor

@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from models import doctor as models
+from src.models import doctor as models
 from schemas import doctor_pydantic as sch
 from sqlalchemy import select
 from sqlalchemy.sql import func

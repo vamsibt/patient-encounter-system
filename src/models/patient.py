@@ -1,7 +1,7 @@
 # ruff: noqa: E402
 from sqlalchemy import String, DateTime, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from database import Base
+from src.database import Base
 from datetime import datetime
 
 
@@ -31,4 +31,4 @@ class Patient(Base):
     appointments: Mapped[list["Appointment"]] = relationship(back_populates="patient")
 
 
-from models.appointment import Appointment
+from src.models.appointment import Appointment

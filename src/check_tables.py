@@ -1,5 +1,5 @@
 from sqlalchemy import inspect
-from database import engine
+from src.database import engine
 
 
 def check_tables():
