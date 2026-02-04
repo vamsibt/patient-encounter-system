@@ -1,51 +1,27 @@
-# ruff: noqa: E402
+from sqlalchemy import DateTime, ForeignKey, Index, Integer, text
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from datetime import datetime
-from database import Base
-from sqlalchemy import (
-    DateTime,
-    ForeignKey,
-    Integer,
-    func,
-)
-from sqlalchemy.orm import (
-    Mapped,
-    mapped_column,
-    relationship,
-)
+from src.database import Base
 
 
 class Appointment(Base):
-    """
-    Represents an appointment between a patient and a doctor.
-    """
+    __tablename__ = "likhitha_appointments"
 
-    __tablename__ = "vamsi_appointments"
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     patient_id: Mapped[int] = mapped_column(
-        ForeignKey("vamsi_patients.id"), nullable=False
+        ForeignKey("likhitha_patients.id", ondelete="RESTRICT"), nullable=False
     )
-
     doctor_id: Mapped[int] = mapped_column(
-        ForeignKey("vamsi_doctors.id"), nullable=False
+        ForeignKey("likhitha_doctors.id", ondelete="RESTRICT"), nullable=False
+    )
+    start_time_utc: Mapped["DateTime"] = mapped_column(DateTime, nullable=False)
+    duration_minutes: Mapped[int] = mapped_column(Integer, nullable=False)
+    created_at: Mapped["DateTime"] = mapped_column(
+        DateTime, nullable=False, server_default=text("CURRENT_TIMESTAMP")
     )
 
-    appointment_start_datetime: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), nullable=False, index=True
-    )
-
-    appointment_duration_minutes: Mapped[int] = mapped_column(Integer, nullable=False)
-
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), nullable=False, server_default=func.now()
-    )
-
-    patient: Mapped["Patient"] = relationship("Patient", back_populates="appointments")
-
-    doctor: Mapped["Doctor"] = relationship("Doctor", back_populates="appointments")
+    patient = relationship("Patient", back_populates="appointments")
+    doctor = relationship("Doctor", back_populates="appointments")
 
 
-from models.patient import Patient
-from models.doctor import Doctor
+Index("ix_doctor_start_time", Appointment.doctor_id, Appointment.start_time_utc)

@@ -1,23 +1,21 @@
-name: Python CI
+name: CI
 
 on:
   push:
-    branches: ["main"]
   pull_request:
-    branches: ["main"]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment: ci
+
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.11" # 3.9 or later (requirement satisfied)
 
       - name: Install Poetry
         run: |
@@ -25,27 +23,23 @@ jobs:
 
       - name: Install dependencies
         run: |
-          poetry install --no-interaction
+          poetry install --with dev
 
-      - name: Run Ruff
+      - name: Lint with Ruff
         run: |
-          poetry run ruff check src
+          poetry run ruff check .
 
-      - name: Run Black
+      - name: Formatting check with Black
         run: |
-          poetry run black --check src
-      
-      
+          poetry run black --check .
 
-      - name: Run Tests with Coverage
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      - name: Security scan with Bandit
         run: |
-          poetry run pytest --cov=src --cov-fail-under=80
+          poetry run bandit -r src -q
 
-      - name: Security Scan (Bandit)
+      - name: Run tests with coverage (minimum 80%)
         run: |
-          poetry run bandit -r src -ll
+          poetry run pytest --cov=src --cov-report=term-missing --cov-fail-under=80
 
       - name: Dependency Audit
         run: |

@@ -1,79 +1,29 @@
-from sqlalchemy.orm import Session
-from models import doctor as models
-from schemas import doctor_pydantic as sch
+from fastapi import HTTPException
 from sqlalchemy import select
-from sqlalchemy.sql import func
-from models.appointment import Appointment
-from models.doctor import Doctor
+from sqlalchemy.orm import Session
+
+from src.models.doctor import Doctor
+from src.schemas.doctor_pydantic import DoctorCreate
 
 
-def create_doctor(db: Session, doctor: sch.DoctorCreate):
-    db_doctor = models.Doctor(
-        full_name=doctor.full_name,
-        specialty=doctor.specialty,
-        active_status=doctor.active_status,
+def create_doctor(db: Session, doctor_create: DoctorCreate) -> Doctor:
+    obj = Doctor(
+        full_name=doctor_create.full_name,
+        is_active=doctor_create.is_active,
+        specialization=doctor_create.specialization,
     )
-    db.add(db_doctor)
+    db.add(obj)
     db.commit()
-    db.refresh(db_doctor)
-    return db_doctor
+    db.refresh(obj)
+    return obj
 
 
-def read_doctor(db: Session, doctor_id: int):
-    stmt = select(
-        models.Doctor.id,
-        models.Doctor.full_name,
-        models.Doctor.specialty,
-        models.Doctor.active_status,
-        models.Doctor.created_at,
-        models.Doctor.updated_at,
-    ).where(models.Doctor.id == doctor_id)
-
-    result = db.execute(stmt).mappings().one_or_none()
-    return result
+def get_doctor(db: Session, doctor_id: int) -> Doctor:
+    obj = db.get(Doctor, doctor_id)
+    if not obj:
+        raise HTTPException(status_code=404, detail="Doctor not found.")
+    return obj
 
 
-def read_all_doctors(db: Session):
-    stmt = select(
-        models.Doctor.id,
-        models.Doctor.full_name,
-        models.Doctor.specialty,
-        models.Doctor.active_status,
-        models.Doctor.created_at,
-        models.Doctor.updated_at,
-    )
-
-    result = db.execute(stmt).mappings().all()
-    return result
-
-
-def toggle_status_doctor(db: Session, doctor_id: int):
-    db_doctor = db.get(models.Doctor, doctor_id)
-    if not db_doctor:
-        return None
-    if db_doctor.active_status:
-        db_doctor.active_status = False
-    else:
-        db_doctor.active_status = True
-    db.commit()
-    db.refresh(db_doctor)
-    return db_doctor
-
-
-def delete_doctor(db: Session, doctor_id: int):
-    doctor = db.get(Doctor, doctor_id)
-    if not doctor:
-        return None
-
-    has_appointments = db.scalar(
-        select(func.count())
-        .select_from(Appointment)
-        .where(Appointment.doctor_id == doctor_id)
-    )
-
-    if has_appointments > 0:
-        raise ValueError("Doctor has appointments and cannot be deleted")
-
-    db.delete(doctor)
-    db.commit()
-    return doctor
+def list_doctors(db: Session) -> list[Doctor]:
+    return list(db.scalars(select(Doctor).order_by(Doctor.id)))

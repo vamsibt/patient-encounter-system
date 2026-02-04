@@ -1,71 +1,38 @@
-from pydantic import BaseModel, field_validator, computed_field, PositiveInt
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone
+
+from pydantic import BaseModel, Field, field_serializer, field_validator
+
+
+def _as_utc_tzaware(dt: datetime) -> datetime:
+    if dt.tzinfo is None or dt.tzinfo.utcoffset(dt) is None:
+        return dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(timezone.utc)
 
 
 class AppointmentCreate(BaseModel):
-    patient_id: PositiveInt
-    doctor_id: PositiveInt
-    appointment_start_datetime: datetime
-    appointment_duration_minutes: int
+    patient_id: int
+    doctor_id: int
+    start_time_utc: datetime
+    duration_minutes: int = Field(ge=15, le=180)
 
-    @field_validator("appointment_start_datetime")
+    @field_validator("start_time_utc")
     @classmethod
-    def must_be_timezone_aware(cls, value: datetime):
-        if value.tzinfo is None or value.tzinfo.utcoffset(value) is None:
-            raise ValueError("appointment_start_datetime must be timezone-aware")
-
-        now = datetime.now(timezone.utc)
-        if value <= now:
-            raise ValueError("appointment_start_datetime must be in the future")
-
-        return value
-
-    @field_validator("appointment_duration_minutes")
-    @classmethod
-    def duration_must_be_valid(cls, value: int):
-        if value < 15 or value > 180:
-            raise ValueError("appointment_duration_minutes must be between 15 and 180")
-        return value
+    def require_tz_and_normalize_to_utc(cls, v: datetime) -> datetime:
+        if v.tzinfo is None or v.tzinfo.utcoffset(v) is None:
+            raise ValueError("start_time_utc must be timezone-aware.")
+        return v.astimezone(timezone.utc)
 
 
 class AppointmentRead(BaseModel):
-    id: PositiveInt
-    patient_id: PositiveInt
-    doctor_id: PositiveInt
-    appointment_start_datetime: datetime
-    appointment_duration_minutes: int
+    id: int
+    patient_id: int
+    doctor_id: int
+    start_time_utc: datetime
+    duration_minutes: int
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = {"from attributes": True}
 
-    @computed_field
-    def appointment_end_datetime(self) -> datetime:
-        return self.appointment_start_datetime + timedelta(
-            minutes=self.appointment_duration_minutes
-        )
-
-
-class AppointmentDetailedRead(BaseModel):
-    appointment_id: PositiveInt
-    appointment_start_datetime: datetime
-    appointment_duration_minutes: int
-    created_at: datetime
-
-    patient_id: PositiveInt
-    patient_first_name: str
-    patient_last_name: str
-    patient_email: str
-
-    doctor_id: PositiveInt
-    doctor_full_name: str
-    doctor_specialty: str
-
-    class Config:
-        from_attributes = True
-
-    @computed_field
-    def appointment_end_datetime(self) -> datetime:
-        return self.appointment_start_datetime + timedelta(
-            minutes=self.appointment_duration_minutes
-        )
+    @field_serializer("start_time_utc", "created_at", when_used="json")
+    def _ser_dt(self, v: datetime) -> datetime:
+        return _as_utc_tzaware(v)

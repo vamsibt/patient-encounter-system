@@ -1,34 +1,28 @@
-# ruff: noqa: E402
-from sqlalchemy import String, DateTime, func
+from sqlalchemy import DateTime, String, UniqueConstraint, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from database import Base
-from datetime import datetime
+
+from src.database import Base
 
 
 class Patient(Base):
-    """
-    Represents a patient in the hospital.
-    """
-
-    __tablename__ = "vamsi_patients"
-
-    id: Mapped[int] = mapped_column(primary_key=True)
+    __tablename__ = "likhitha_patients"
+    __table_args__ = (UniqueConstraint("email", name="uq_patient_email"),)
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     first_name: Mapped[str] = mapped_column(String(100), nullable=False)
     last_name: Mapped[str] = mapped_column(String(100), nullable=False)
-    email: Mapped[str] = mapped_column(String(100), nullable=False, unique=True)
-    phone_number: Mapped[str] = mapped_column(String(10), nullable=False)
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
-    )
+    email: Mapped[str] = mapped_column(String(255), nullable=False)
+    phone: Mapped[str] = mapped_column(String(15), nullable=False)
 
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        server_default=func.now(),
-        onupdate=func.now(),
+    created_at: Mapped["DateTime"] = mapped_column(
+        DateTime, nullable=False, server_default=text("CURRENT_TIMESTAMP")
+    )
+    updated_at: Mapped["DateTime"] = mapped_column(
+        DateTime,
         nullable=False,
+        server_default=text("CURRENT_TIMESTAMP"),
+        onupdate=text("CURRENT_TIMESTAMP"),
     )
 
-    appointments: Mapped[list["Appointment"]] = relationship(back_populates="patient")
-
-
-from models.appointment import Appointment
+    appointments = relationship(
+        "Appointment", back_populates="patient", passive_deletes=True
+    )
