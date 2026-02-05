@@ -5,7 +5,7 @@ from src.database import Base
 
 
 class Doctor(Base):
-    __tablename__ = "likhitha_doctors"
+    __tablename__ = "vamsi_doctors"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     full_name: Mapped[str] = mapped_column(String(100), nullable=False)
