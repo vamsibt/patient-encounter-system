@@ -5,7 +5,7 @@ from src.database import Base
 
 
 class Patient(Base):
-    __tablename__ = "likhitha_patients"
+    __tablename__ = "vamsi_patients"
     __table_args__ = (UniqueConstraint("email", name="uq_patient_email"),)
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     first_name: Mapped[str] = mapped_column(String(100), nullable=False)
