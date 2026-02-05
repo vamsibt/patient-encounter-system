@@ -5,14 +5,14 @@ from src.database import Base
 
 
 class Appointment(Base):
-    __tablename__ = "likhitha_appointments"
+    __tablename__ = "vamsi_appointments"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     patient_id: Mapped[int] = mapped_column(
-        ForeignKey("likhitha_patients.id", ondelete="RESTRICT"), nullable=False
+        ForeignKey("vamsi_patients.id", ondelete="RESTRICT"), nullable=False
     )
     doctor_id: Mapped[int] = mapped_column(
-        ForeignKey("likhitha_doctors.id", ondelete="RESTRICT"), nullable=False
+        ForeignKey("vamsi_doctors.id", ondelete="RESTRICT"), nullable=False
     )
     start_time_utc: Mapped["DateTime"] = mapped_column(DateTime, nullable=False)
     duration_minutes: Mapped[int] = mapped_column(Integer, nullable=False)
